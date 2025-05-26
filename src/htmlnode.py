@@ -1,3 +1,6 @@
+from textnode import *
+import re
+
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
         #tag and value are strings, children are HTMLNode Objects
@@ -52,3 +55,36 @@ class ParentNode(HTMLNode):
             #children_html = child.to_html()
             children_html += child.to_html()
         return f'<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>'
+
+#This function
+#1st argument is a LIST of TEXTNODES i.e [TextNode1,TextNode2,TextNode3]
+#2nd argument is a string: can be one of 3: **, _ or `
+#3rd argument is a text_type enumeration.
+#Important! text_type should match the delimiter
+def split_nodes_delimiter(old_nodes: list[TextNode], delimiter:str, text_type:TextType):
+    new_nodes=[]
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.Normal:
+            new_nodes.append(old_node)
+            continue
+        splitted = old_node.text.split(delimiter)
+        if len(splitted) % 2 == 0: #make sure that all openings are closed
+            raise ValueError(f"Invalid Markdown syntax: Unmatched delimiter '{delimiter}' found in text: {old_node.text}")
+        for index, item in enumerate(splitted):
+            if item == "":
+                continue
+            if index % 2 == 0: #text before starting delimiter or after ending delimiter
+                new_nodes.append(TextNode(item,TextType.Normal))
+            else: #text in between startng and ending delimiter
+                new_nodes.append(TextNode(item,text_type))
+    return new_nodes
+
+def extract_markdown_images(text:str) -> list[tuple]:
+    res= re.findall(r'!\[(.*?)\]\((.*?)\)', text)
+    return res
+
+def split_nodes_images(old_nodes):
+    ...
+def split_nodes_links(old_nodes):
+    ...
+    

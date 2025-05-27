@@ -1,4 +1,4 @@
-from textnode import *
+from src.textnode import *
 import re
 
 class HTMLNode:
@@ -82,9 +82,3 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter:str, text_type:Te
 def extract_markdown_images(text:str) -> list[tuple]:
     res= re.findall(r'!\[(.*?)\]\((.*?)\)', text)
     return res
-
-def split_nodes_images(old_nodes):
-    ...
-def split_nodes_links(old_nodes):
-    ...
-    

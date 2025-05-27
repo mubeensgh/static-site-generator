@@ -30,7 +30,7 @@ class TestSplitNodesDelimiter(unittest.TestCase):
 
     def test_multiple_delimiters(self):
         node = TextNode("This is **bold** and `code` and _italic_ text.", TextType.Normal)
-        # First, split by bold
+        
         nodes_after_bold = split_nodes_delimiter([node], "**", TextType.BOLD)
         expected_after_bold = [
             TextNode("This is ", TextType.Normal),
@@ -39,7 +39,7 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         ]
         self.assertEqual(nodes_after_bold, expected_after_bold)
 
-        # Then, split the result by code
+        
         nodes_after_code = split_nodes_delimiter(nodes_after_bold, "`", TextType.CODE)
         expected_after_code = [
             TextNode("This is ", TextType.Normal),
@@ -50,7 +50,7 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         ]
         self.assertEqual(nodes_after_code, expected_after_code)
 
-        # Finally, split by italic
+        
         nodes_after_italic = split_nodes_delimiter(nodes_after_code, "_", TextType.ITALIC)
         expected_after_italic = [
             TextNode("This is ", TextType.Normal),

@@ -1,7 +1,7 @@
 import os
 from src.markdown_parser import markdown_to_html_node, extract_title
 
-def _generate_page_from_file(from_file_path: str, template_path: str, dest_file_path: str):
+def _generate_page_from_file(from_file_path: str, template_path: str, dest_file_path: str, basepath: str):
 
     with open(from_file_path, 'r', encoding='utf-8') as f:
         markdown_content = f.read()
@@ -16,6 +16,9 @@ def _generate_page_from_file(from_file_path: str, template_path: str, dest_file_
 
     final_html = template_content.replace("{{ Title }}", page_title)
     final_html = final_html.replace("{{ Content }}", page_content_html)
+    #deployment shenanegans
+    final_html = final_html.replace('href="/', f'href="{basepath}')
+    final_html = final_html.replace('src="/', f'src="{basepath}')
 
     dest_dir = os.path.dirname(dest_file_path)
     if dest_dir:
@@ -24,10 +27,8 @@ def _generate_page_from_file(from_file_path: str, template_path: str, dest_file_
     with open(dest_file_path, 'w', encoding='utf-8') as f:
         f.write(final_html)
 
-    print(f"Single page generation complete for {from_file_path}")
 
-
-def generate_page(from_path: str, template_path: str, dest_dir_path: str):
+def generate_page(from_path: str, template_path: str, dest_dir_path: str,basepath: str):
 
     if os.path.isfile(from_path):
         if not from_path.endswith(".md"):
@@ -38,8 +39,9 @@ def generate_page(from_path: str, template_path: str, dest_dir_path: str):
         html_filename = os.path.splitext(base_filename)[0] + ".html" # e.g., 'index.html'
         final_dest_html_path = os.path.join(dest_dir_path, html_filename)
 
-        _generate_page_from_file(from_path, template_path, final_dest_html_path)
+        _generate_page_from_file(from_path, template_path, final_dest_html_path,basepath)
         return 
+    #recursive print.. delete
 
     os.makedirs(dest_dir_path, exist_ok=True)
 
@@ -49,10 +51,10 @@ def generate_page(from_path: str, template_path: str, dest_dir_path: str):
 
         if os.path.isdir(source_item_path):
             next_level_dest_dir_path = os.path.join(dest_dir_path, item_name)
-            generate_page(source_item_path, template_path, next_level_dest_dir_path)
+            generate_page(source_item_path, template_path, next_level_dest_dir_path, basepath)
 
         elif os.path.isfile(source_item_path):
-            generate_page(source_item_path, template_path, dest_dir_path) # Pass the current dir
+            generate_page(source_item_path, template_path, dest_dir_path,basepath) # Pass the current dir
         else:
             print(f"  Skipping unknown item type: {source_item_path}")
             
